@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gjenerues BIN - Terminal</title>
+    <style>
+        /* Variablat CSS për temën Hacker / Sfond i Zi */
+        :root {
+            --bg-main: #000000;
+            --bg-panel: #080c08;
+            --bg-input: #020402;
+            --accent-green: #00ff41;
+            --accent-green-hover: #00cc33;
+            --text-main: #e0ffe0;
+            --text-muted: #4d8055;
+            --text-result: #00ff41;
+            --border-color: #143318;
+            --glow-shadow: 0 0 15px rgba(0, 255, 65, 0.15);
+            --font-main: 'Courier New', Courier, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Seksioni i Logos Lart */
+        .header-logo {
+            text-align: center;
+            margin-bottom: 24px;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        .header-logo img {
+            max-height: 150px;
+            width: auto;
+            border-radius: 8px;
+            filter: drop-shadow(0 0 12px rgba(0, 255, 65, 0.35));
+        }
+
+        .header-title {
+            color: var(--accent-green);
+            font-size: 14px;
+            letter-spacing: 3px;
+            margin-top: 8px;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(0, 255, 65, 0.5);
+        }
+
+        .container {
+            display: flex;
+            gap: 24px;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        .panel {
+            background-color: var(--bg-panel);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: var(--glow-shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .left-panel {
+            flex: 0 0 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .label {
+            color: var(--accent-green);
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .input-field {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--accent-green);
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-size: 15px;
+            width: 100%;
+            outline: none;
+            font-family: var(--font-main);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 8px rgba(0, 255, 65, 0.3);
+        }
+
+        select.input-field {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300ff41%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px top 50%;
+            background-size: 10px auto;
+        }
+
+        .quick-select {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .quick-btn {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: var(--font-main);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:hover {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+            box-shadow: 0 0 8px rgba(0, 255, 65, 0.2);
+        }
+
+        .row-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .format-container {
+            display: flex;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 4px;
+        }
+
+        .format-btn {
+            flex: 1;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 10px 0;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: var(--font-main);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .format-btn.active {
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            background-color: rgba(0, 255, 65, 0.08);
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+        }
+
+        .generate-btn {
+            background-color: var(--accent-green);
+            color: #000000;
+            border: none;
+            border-radius: 6px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 800;
+            font-family: var(--font-main);
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            transition: all 0.2s;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+        }
+
+        .generate-btn:hover {
+            background-color: var(--accent-green-hover);
+            box-shadow: 0 0 22px rgba(0, 255, 65, 0.6);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .result-title {
+            color: var(--accent-green);
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .copy-icon {
+            cursor: pointer;
+            color: var(--accent-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .copy-icon:hover {
+            background-color: rgba(0, 255, 65, 0.25);
+            border-color: var(--accent-green);
+        }
+
+        .result-output {
+            flex: 1;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-result);
+            font-family: var(--font-main);
+            font-size: 14px;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            overflow-y: auto;
+            white-space: pre;
+            padding: 14px;
+        }
+
+        .result-output::-webkit-scrollbar {
+            width: 6px;
+        }
+        .result-output::-webkit-scrollbar-track {
+            background: var(--bg-input);
+        }
+        .result-output::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 4px;
+        }
+        .result-output::-webkit-scrollbar-thumb:hover {
+            background-color: var(--accent-green);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+        
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+
+        .custom-spinner {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .spinner-btn {
+            background: transparent;
+            border: none;
+            color: var(--accent-green);
+            font-size: 8px;
+            padding: 2px 5px;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .spinner-btn:hover { 
+            color: #000000; 
+            background: var(--accent-green); 
+        }
+
+        @media (max-width: 850px) {
+            .container { flex-direction: column; }
+            .left-panel { flex: auto; }
+            .result-output { height: 400px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGOJA LART NË FAQE -->
+<div class="header-logo">
+    <img src="https://i.ibb.co/VYYwGx8q/hacker-logo.png" alt="Hacker Logo">
+    <div class="header-title">[ SISTEMI I GJENERIMIT TË KARTAVE // MODALITETI OFFLINE ]</div>
+</div>
+
+<div class="container">
+    <!-- PANELI I MAJTË (KONTROLLET) -->
+    <div class="panel left-panel">
+        
+        <div>
+            <label class="label">> MODELI BIN</label>
+            <input type="text" id="bin-input" class="input-field" value="342871" placeholder="Shkruani BIN...">
+        </div>
+
+        <div>
+            <label class="label" style="color: var(--text-muted); font-size: 11px;">ZGJEDHJE E SHPEJTË:</label>
+            <div class="quick-select">
+                <button class="quick-btn" onclick="setBin('453200')">Visa 4532</button>
+                <button class="quick-btn" onclick="setBin('455600')">Visa 4556</button>
+                <button class="quick-btn" onclick="setBin('491600')">Visa 4916</button>
+                <button class="quick-btn" onclick="setBin('542500')">MC 5425</button>
+                <button class="quick-btn" onclick="setBin('555500')">MC 5555</button>
+                <button class="quick-btn" onclick="setBin('378200')">Amex 3782</button>
+            </div>
+        </div>
+
+        <div class="row-grid">
+            <div>
+                <label class="label">> MUAJI</label>
+                <select id="month-select" class="input-field">
+                    <option value="Random">I rastësishëm</option>
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                    <option value="07">07</option>
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+            </div>
+            <div>
+                <label class="label">> VITI</label>
+                <select id="year-select" class="input-field">
+                    <option value="Random">I rastësishëm</option>
+                    <!-- Vitet mbushen automatikisht nga JS -->
+                </select>
+            </div>
+        </div>
+
+        <div class="row-grid">
+            <div>
+                <label class="label">> KODI CVV</label>
+                <input type="text" id="cvv-input" class="input-field" value="rnd" placeholder="rnd ose 3 shifra">
+            </div>
+            <div>
+                <label class="label">> SASIA</label>
+                <div class="input-wrapper">
+                    <input type="number" id="quantity-input" class="input-field" value="10" min="1" max="500">
+                    <div class="custom-spinner">
+                        <button class="spinner-btn" onclick="stepValue('quantity-input', 1)">▲</button>
+                        <button class="spinner-btn" onclick="stepValue('quantity-input', -1)">▼</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label class="label">> FORMATI I DALJES</label>
+            <div class="format-container" id="format-container">
+                <button class="format-btn active" data-format="pipe">PIPE</button>
+                <button class="format-btn" data-format="csv">CSV</button>
+                <button class="format-btn" data-format="json">JSON</button>
+            </div>
+        </div>
+
+        <button class="generate-btn" onclick="generateCards()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+            </svg>
+            GJENERO
+        </button>
+
+    </div>
+
+    <!-- PANELI I DJATHTË (REZULTATET) -->
+    <div class="panel right-panel">
+        
+        <div class="result-header">
+            <div class="result-title">> REZULTATET E GJENERUARA</div>
+            <div class="result-meta">
+                <span>namso-core-v5.0.2 [AL]</span>
+                <div class="copy-icon" title="Kopjo rezultatet" onclick="copyResults()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <textarea id="result-output" class="result-output" readonly placeholder="Kartat e gjeneruara do të shfaqen këtu..."></textarea>
+    </div>
+</div>
+
+<script>
+    // --- Inicializimi ---
+    
+    // Mbushja e viteve (2026 - 2050)
+    const yearSelect = document.getElementById('year-select');
+    for (let i = 2026; i <= 2050; i++) {
+        const option = document.createElement('option');
+        option.value = i.toString().slice(-2);
+        option.text = i;
+        yearSelect.appendChild(option);
+    }
+
+    // Formati aktual
+    let currentFormat = 'pipe';
+
+    // Butonat e formatit
+    document.querySelectorAll('.format-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            currentFormat = e.target.getAttribute('data-format');
+            if (document.getElementById('result-output').value) {
+                generateCards();
+            }
+        });
+    });
+
+    // --- Funksionet Ndihmëse ---
+
+    function setBin(binValue) {
+        document.getElementById('bin-input').value = binValue;
+    }
+
+    function stepValue(id, step) {
+        const el = document.getElementById(id);
+        let val = parseInt(el.value) || 0;
+        val += step;
+        if (val < 1) val = 1;
+        if (val > 500) val = 500;
+        el.value = val;
+    }
+
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function padZero(num, length = 2) {
+        return num.toString().padStart(length, '0');
+    }
+
+    function calculateLuhn(partialCard) {
+        let sum = 0;
+        let double = true;
+        for (let i = partialCard.length - 1; i >= 0; i--) {
+            let digit = parseInt(partialCard.charAt(i), 10);
+            if (double) {
+                digit *= 2;
+                if (digit > 9) digit -= 9;
+            }
+            sum += digit;
+            double = !double;
+        }
+        return (10 - (sum % 10)) % 10;
+    }
+
+    function generateCardNumber(bin) {
+        let isAmex = bin.startsWith('34') || bin.startsWith('37');
+        let targetLength = isAmex ? 15 : 16;
+        
+        if (bin.length >= targetLength) {
+            return bin.substring(0, targetLength);
+        }
+
+        let missingDigitsCount = targetLength - 1 - bin.length;
+        let randomPart = '';
+        for (let i = 0; i < missingDigitsCount; i++) {
+            randomPart += getRandomInt(0, 9).toString();
+        }
+
+        let partialCard = bin + randomPart;
+        let checkDigit = calculateLuhn(partialCard);
+        
+        return partialCard + checkDigit;
+    }
+
+    // --- Logjika Kryesore e Gjenerimit ---
+
+    function generateCards() {
+        const bin = document.getElementById('bin-input').value.trim();
+        const monthSel = document.getElementById('month-select').value;
+        const yearSel = document.getElementById('year-select').value;
+        const cvvInput = document.getElementById('cvv-input').value.trim();
+        const quantity = parseInt(document.getElementById('quantity-input').value);
+        const outputArea = document.getElementById('result-output');
+
+        if (!bin) {
+            alert("Ju lutemi shkruani një model BIN.");
+            return;
+        }
+        if (quantity < 1 || quantity > 500) {
+            alert("Ju lutemi vendosni një sasi midis 1 dhe 500.");
+            return;
+        }
+
+        let results = [];
+        let jsonResults = [];
+
+        for (let i = 0; i < quantity; i++) {
+            let month = monthSel === "Random" ? padZero(getRandomInt(1, 12)) : monthSel;
+            let year = yearSel === "Random" ? padZero(getRandomInt(26, 50)) : yearSel;
+            
+            // Përcaktimi i CVV: Gjeneron gjithmonë 3 shifra random (ose merr vlerën nga inputi nëse shkruhet diçka specifike)
+            let cvv;
+            if (cvvInput.toLowerCase() === 'rnd' || cvvInput === '') {
+                cvv = padZero(getRandomInt(100, 999), 3);
+            } else {
+                cvv = cvvInput; // Përdor vlerën e vendosur manualisht nëse përdoruesi do një statike
+            }
+
+            let cardNumber = generateCardNumber(bin);
+
+            if (currentFormat === 'pipe') {
+                results.push(`${cardNumber}|${month}|${year}|${cvv}`);
+            } else if (currentFormat === 'csv') {
+                results.push(`${cardNumber},${month},${year},${cvv}`);
+            } else if (currentFormat === 'json') {
+                jsonResults.push({
+                    karta: cardNumber,
+                    muaji: month,
+                    viti: year,
+                    cvv: cvv
+                });
+            }
+        }
+
+        if (currentFormat === 'json') {
+            outputArea.value = JSON.stringify(jsonResults, null, 2);
+        } else {
+            outputArea.value = results.join('\n');
+        }
+    }
+
+    function copyResults() {
+        const outputArea = document.getElementById('result-output');
+        if (!outputArea.value) return;
+
+        outputArea.select();
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
+
+        const copyBtn = document.querySelector('.copy-icon');
+        const originalHTML = copyBtn.innerHTML;
+        copyBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        setTimeout(() => {
+            copyBtn.innerHTML = originalHTML;
+        }, 1500);
+    }
+
+    window.onload = () => {
+        generateCards();
+    };
+</script>
+</body>
+</html>
